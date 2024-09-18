@@ -30,8 +30,8 @@ def save_json_to_db(json_file_path):
     for article in articles:
         # 각 기사 데이터를 삽입
         cursor.execute('''
-                INSERT INTO news (name, title, content, date, language, url, image, summary, memo, mark)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO news (name, title, content, date, language, url, image, summary, memo)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''', (
             article.get("name"),
             article.get("title"),
@@ -42,7 +42,6 @@ def save_json_to_db(json_file_path):
             article.get("image", None),  # 한국 신문일 경우 이미지
             article.get("summary", ""),  # 요약 (필요시)
             article.get("memo", ""),  # 메모 (필요시)
-            article.get("mark", "")  # 사용자 지정 표시
         ))
 
     conn.commit()
