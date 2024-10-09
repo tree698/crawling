@@ -27,7 +27,7 @@ class Address:
     def __init__(self):
         self.headers = {
             "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7",
-            "User-Agent": f'{FAKE_USER_AGENTS[random.randint(0,3)]}'
+            "User-Agent": f'{FAKE_USER_AGENTS[random.randint(0,4)]}'
         }
 
         self.sites = {
@@ -44,7 +44,8 @@ class Address:
                 {
                     "name": "asahimorning",
                     "url":  f'https://www.asahi.com/shimen/{TODAY_FORMATTED}/?iref=pc_gnavi',
-                    "title_article-url_selectors": "#shimen-digest > ul > li > a",  # 기사 제목 CSS 셀렉터
+                    "title_article-url_selectors": "#shimen-digest > ul > li > a",
+                    # "title_article-url_selectors": "#shimen-page1 > .List li:not(:nth-last-child(-n+3)) a",
                     "headers": self.headers
                 },
                 {
@@ -61,24 +62,59 @@ class Address:
                     "title_article-url_selectors": ['.css-1u3p7j1', '.css-12y5jls .css-i435f0'],  # 기사 제목, URL CSS 셀렉터
                     "headers": self.headers
                 },
-                {
-                    "name": "wp",
-                    "url": "https://www.washingtonpost.com/todays_paper/updates/",
-                    "title_article-url_selectors": "#Front-Page .wpds-c-eGurKC",  # 기사 제목, URL CSS 셀렉터
-                    "headers": self.headers
-                },
-                {
-                    "name": "ft",
-                    "url": "https://www.ft.com/",
-                    "title_article-url_selectors": "#top-stories + .layout-desktop__grid-container .text.text--color-black.text-display--scale-3.text--weight-500",  # 기사 제목, URL CSS 셀렉터
-                    "headers": self.headers
-                },
+                # {
+                #     "name": "wp",
+                #     "url": "https://www.washingtonpost.com/todays_paper/updates/",
+                #     "title_article-url_selectors": "#Front-Page .wpds-c-eGurKC",  # 기사 제목, URL CSS 셀렉터
+                #     "headers": self.headers
+                # },
                 {
                     "name": "wsj",
                     "url": f'https://www.wsj.com/print-edition/{TODAY_FORMATTED}/frontpage',
                     "title_article-url_selectors": ".WSJTheme--list-item--v87pvXUl a",  # 기사 제목, URL CSS 셀렉터
                     "headers": self.headers
-                }
+                },
+                {
+                    "name": "ft",
+                    "url": "https://www.ft.com/",
+                    "title_article-url_selectors": "#top-stories + .layout-desktop__grid-container .text.text--color-black.text-display--scale-3.text--weight-500",
+                    # 기사 제목, URL CSS 셀렉터
+                    "headers": self.headers
+                },
+                {
+                    "name": "guardian",
+                    "url": f'https://www.theguardian.com/uk?INTCMP=CE_UK',
+                    "title_article-url_selectors": "section[data-link-name='most-viewed'] ol > li:nth-child(-n+3)",  # 기사 제목, URL CSS 셀렉터
+                    "headers": self.headers
+                },
+                {
+                    "name": "times",
+                    "url": f'https://www.thetimes.com/uk',
+                    "title_article-url_selectors": "div[class*='gre9re'] div[data-testid='lead-article-content'] a[class*='1ezjfb7'] span[class*='d9g6wh']",  # 기사 제목, URL CSS 셀렉터
+                    "headers": self.headers
+                },
+                {
+                    "name": "times",
+                    "url": f'https://www.thetimes.com/uk',
+                    "title_article-url_selectors": "div[class*='196m710'] div[data-testid='lead-article-content'] a[class*='1ezjfb7'] span[class*='135o9vn']",
+                    "headers": self.headers
+                },
+            ],
+            "fr": [
+                {
+                    "name": "monde",
+                    "url": f'https://www.lemonde.fr/',
+                    "title_article-url_selectors": "#habillagepub .article__list-grid li:nth-child(-n+5)",
+                    "headers": self.headers
+                },
+            ],
+            "du": [
+                {
+                    "name": "sz",
+                    "url": f'https://www.sueddeutsche.de/',
+                    "title_article-url_selectors": ".css-fhzu3t > article",
+                    "headers": self.headers
+                },
             ],
 
         }

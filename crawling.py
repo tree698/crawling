@@ -15,19 +15,19 @@ class Crawling:
 
     def fetch_html(self, url, headers):
         try:
-            response = requests.get(url, headers=headers, timeout=10)  # 10초 타임아웃 설정
+            response = requests.get(url, headers=headers)  # 30초 타임아웃 설정 timeout=30
             response.raise_for_status()  # HTTP 오류 발생 시 예외 처리
             if response.status_code == 200:
                 return response.content  # 원시 바이너리 데이터를 반환 (일본어 등 대응)
             else:
                 print(f"Failed to retrieve data from {url} with status code {response.status_code}")
                 return None
-        except Timeout:
-            print(f"Request timed out for {url}")
         except HTTPError as http_err:
             print(f"HTTP error occurred: {http_err} - URL: {url}")
         except RequestException as req_err:
             print(f"Error occurred: {req_err} - URL: {url}")
+        # except Timeout:
+        #     print(f"Request timed out for {url}")
         except Exception as err:
             print(f"Unexpected error: {err} - URL: {url}")
         return None
@@ -118,8 +118,9 @@ class Crawling:
 
         return articles
 
+
     def parse_content(self, article_url, site, title):
-        if self.language in ['jp', 'en']:
+        if self.language in ['jp', 'en', 'fr', 'du']:
             return None
 
         html_content = self.fetch_html(article_url, site["headers"])
@@ -153,7 +154,7 @@ class Crawling:
                 all_articles.extend(articles)
 
             # 만약 일본이나 미국 신문이 아니고, 내용 크롤링이 필요한 경우
-            if self.language not in ['jp', 'en']:
+            if self.language not in ['jp', 'en', 'fr', 'du']:
                 for article in articles:
                     content_data = self.parse_content(article.get("url"), site, article["title"])
                     if content_data:

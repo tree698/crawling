@@ -58,8 +58,8 @@ def process_all_json_files(directory):
 
 if __name__ == "__main__":
     # JSON 파일들이 저장된 경로
-    json_data_directory = './data'
+    # json_data_directory = './data'
 
     # 모든 JSON 파일을 읽고 데이터베이스에 저장
-    process_all_json_files(json_data_directory)
+    # process_all_json_files(json_data_directory)
     print("모든 파일이 데이터베이스에 성공적으로 저장되었습니다.")

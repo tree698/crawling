@@ -32,4 +32,5 @@ def delete_all_data():
     print("DB에서 모든 데이터가 삭제되었습니다.")
 
 if __name__ == "__main__":
-    delete_all_data()
+    # delete_all_data()
+    print('test')

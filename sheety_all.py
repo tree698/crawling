@@ -72,8 +72,8 @@ if __name__ == "__main__":
     jp_file_path = './data/JP_news.csv'
 
     # 한국어 기사 (language='ko')
-    save_csv_to_db(ko_file_path, 'ko')
-    save_csv_to_db(en_file_path, 'en')
-    save_csv_to_db(jp_file_path, 'jp')
+    # save_csv_to_db(ko_file_path, 'ko')
+    # save_csv_to_db(en_file_path, 'en')
+    # save_csv_to_db(jp_file_path, 'jp')
 
     print("CSV 데이터를 DB에 성공적으로 저장했습니다.")

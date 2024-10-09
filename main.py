@@ -1,5 +1,4 @@
-import os
-import json
+import os, json
 from crawling import Crawling
 from datetime import datetime
 
@@ -20,7 +19,7 @@ def save_to_json(data, language):
 
 
 def main():
-    languages = ['ko', 'jp', 'en']
+    languages = ['ko', 'jp', 'en', 'fr', 'du']
 
     for language in languages:
         crawler = Crawling(language)
