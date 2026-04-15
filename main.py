@@ -19,7 +19,7 @@ def save_to_json(data, language):
 
 
 def main():
-    languages = ['ko', 'jp', 'en', 'fr', 'du']
+    languages = ['ko', 'jp', 'fr', 'du', 'en']
 
     for language in languages:
         crawler = Crawling(language)

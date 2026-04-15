@@ -3,7 +3,6 @@ from requests.exceptions import HTTPError, RequestException, Timeout
 from bs4 import BeautifulSoup
 from address import Address
 from datetime import datetime, timezone
-from urllib.parse import urljoin
 
 DATETIME = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -13,22 +12,24 @@ class Crawling:
         self.language = language
         self.address = Address().sites[language]
 
-    def fetch_html(self, url, headers, retries=3):
-        session = requests.Session()
 
-        for attempt in range(retries):
-            try:
-                response = session.get(url, headers=headers, timeout=20)
-                response.raise_for_status()
-                return response.content
-            except Timeout:
-                print(f"Timeout ({attempt + 1}/{retries}) for {url}")
-            except HTTPError as http_err:
-                print(f"HTTP error occurred: {http_err} - URL: {url}")
-                break
-            except RequestException as req_err:
-                print(f"Request error ({attempt + 1}/{retries}): {req_err} - URL: {url}")
-
+    def fetch_html(self, url, headers):
+        try:
+            response = requests.get(url, headers=headers)  # 30초 타임아웃 설정 timeout=30
+            response.raise_for_status()  # HTTP 오류 발생 시 예외 처리
+            if response.status_code == 200:
+                return response.content  # 원시 바이너리 데이터를 반환 (일본어 등 대응)
+            else:
+                print(f"Failed to retrieve data from {url} with status code {response.status_code}")
+                return None
+        except HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err} - URL: {url}")
+        except RequestException as req_err:
+            print(f"Error occurred: {req_err} - URL: {url}")
+        # except Timeout:
+        #     print(f"Request timed out for {url}")
+        except Exception as err:
+            print(f"Unexpected error: {err} - URL: {url}")
         return None
 
 
@@ -37,7 +38,7 @@ class Crawling:
 
         if html_content is None:
             print(f"[ERROR] HTML content is None for {site['url']}")
-            return []
+            return []  # 또는 None
 
         soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -62,16 +63,42 @@ class Crawling:
                     seen_titles.add(title)  # 제목을 중복 추적 집합에 추가
 
         elif self.language == 'en':
-            article_elements = soup.select(site["title_article-url_selectors"])
-            articles = []
-            for article_element in article_elements:
-                title = article_element.getText().strip()
-                articles.append({
-                    "name": site["name"],
-                    "title": title,
-                    "date": utc_now,  # UTC 시간 사용
-                    "language": self.language
-                })
+            if site.get('name') == 'nyt':
+                # 첫 번째 기사 선택
+                article_elements = soup.select(site["title_article-url_selectors"][0])
+                articles = []
+                for article_element in article_elements:
+                    title = article_element.getText().strip()
+                    articles.append({
+                        "name": site["name"],
+                        "title": title,
+                        "date": utc_now,  # UTC 시간 사용
+                        "language": self.language
+                    })
+
+                # 두 번째 기사 선택 (A1)
+                title_additional = soup.select(site["title_article-url_selectors"][1])
+                for article_element in title_additional:
+                    is_A1 = article_element.getText().split(' ')[-1]
+                    if is_A1 == 'A1':
+                        title_text = article_element.select_one('h2').getText()
+                        articles.append({
+                            "name": site["name"],
+                            "title": title_text,
+                            "date": utc_now,  # UTC 시간 사용
+                            "language": self.language
+                        })
+            else:
+                article_elements = soup.select(site["title_article-url_selectors"])
+                articles = []
+                for article_element in article_elements:
+                    title = article_element.getText().strip()
+                    articles.append({
+                        "name": site["name"],
+                        "title": title,
+                        "date": utc_now,  # UTC 시간 사용
+                        "language": self.language
+                    })
 
         else:
             article_elements = soup.select(site["title_article-url_selectors"])
@@ -82,10 +109,8 @@ class Crawling:
                 # 제목 전처리
                 cleaned_title = clean_content(title)
                 url = article_element.get('href')
-                # if url and not url.startswith('http'):
-                #     url = site["url"] + url
-                if url:
-                    url = urljoin(site["url"], url)
+                if url and not url.startswith('http'):
+                    url = site["url"] + url  # 상대 경로 처리
                 article = {
                     "name": site["name"],  # name 필드 추가
                     "title": cleaned_title,
@@ -103,9 +128,6 @@ class Crawling:
             return None
 
         html_content = self.fetch_html(article_url, site["headers"])
-        if html_content is None:
-            print(f"[ERROR] HTML content is None for article URL: {article_url}")
-            return {"content": None, "image": None}
         soup = BeautifulSoup(html_content, "html.parser")
         article_element = soup.select_one(site["content_selectors"])
 
